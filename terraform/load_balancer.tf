@@ -2,7 +2,7 @@ resource "aws_lb" "primary_alb" {
   name               = "${local.resource_name_prefix}-primary-load-balancer"
   internal           = false
   load_balancer_type = "application"
-  subnets            = []
+  subnets            = var.vpc_zone_identifier
 }
 
 

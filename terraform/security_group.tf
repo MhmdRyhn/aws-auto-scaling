@@ -10,9 +10,10 @@ resource "aws_security_group" "app_instance_sg" {
 
   ingress {
     description = "HTTP from VPC"
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
+    // This should be from the subnet(s) where the Load Balancer exists
     cidr_blocks = [data.aws_vpc.app_vpc.cidr_block]
   }
 

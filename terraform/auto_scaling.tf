@@ -29,7 +29,7 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
 
 
 resource "aws_autoscaling_attachment" "autoscaling_target_group_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.arn
+  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.name
   alb_target_group_arn   = aws_lb_target_group.primary_alb_target_group.arn
 }
 

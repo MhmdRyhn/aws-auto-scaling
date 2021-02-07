@@ -21,7 +21,7 @@ variable "environment" {
 
 variable "image_id" {
   type        = string
-  description = "AWS AMI ID."
+  description = "AWS AMI ID. Install all the required software packages when building the Image."
 }
 
 variable "instance_type" {
