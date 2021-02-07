@@ -8,7 +8,6 @@ cd /var//www/
 # Don't use username and password to clone the repo.
 git clone https://github.com/MhmdRyhn/aws-auto-scaling.git
 cd aws-auto-scaling
-pip3 install virtualenv
 # create vurtual environment
 virtualenv -p python3 venv
 venv/bin/pip install -r requirements.txt
