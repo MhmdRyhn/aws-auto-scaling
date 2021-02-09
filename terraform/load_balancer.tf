@@ -1,5 +1,5 @@
 resource "aws_lb" "primary_alb" {
-  name               = "${local.resource_name_prefix}-primary-load-balancer"
+  name               = "${local.resource_name_prefix}-primary-alb"
   internal           = false
   load_balancer_type = "application"
   subnets            = var.vpc_zone_identifier
@@ -50,6 +50,18 @@ resource "aws_lb_listener_rule" "primary_alb_listener_rule" {
   action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.primary_alb_target_group.arn
+
+// # 'forward' block must have at least two "target_group" block inside it
+//    forward {
+//      target_group {
+//        arn = aws_lb_target_group.primary_alb_target_group.arn
+//        weight = 1
+//      }
+//      stickiness {
+//        enabled = false
+//        duration = 1
+//      }
+//    }
   }
   condition {
     path_pattern {

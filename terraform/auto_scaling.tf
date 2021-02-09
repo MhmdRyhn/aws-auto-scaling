@@ -29,7 +29,7 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
 
 
 resource "aws_autoscaling_attachment" "autoscaling_target_group_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.name
+  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.id
   alb_target_group_arn   = aws_lb_target_group.primary_alb_target_group.arn
 }
 
@@ -38,30 +38,39 @@ resource "aws_autoscaling_policy" "scale_out_policy" {
   name                    = "${local.resource_name_prefix}-scale-out-policy"
   autoscaling_group_name  = aws_autoscaling_group.auto_scaling_group.name
   adjustment_type         = "ExactCapacity"
-  policy_type             = "StepScaling"
-  metric_aggregation_type = "Average"
-  step_adjustment {
-    scaling_adjustment          = 1
-    metric_interval_lower_bound = 0
-    metric_interval_upper_bound = var.request_per_server_per_minute
+  policy_type             = "TargetTrackingScaling"
+//  metric_aggregation_type = "Sum"
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label = "${aws_lb.primary_alb.arn_suffix}/${aws_lb_target_group.primary_alb_target_group.arn_suffix}"
+    }
+    target_value = 5.0
   }
-  step_adjustment {
-    scaling_adjustment          = 2
-    metric_interval_lower_bound = var.request_per_server_per_minute
-    metric_interval_upper_bound = var.request_per_server_per_minute * 2
-  }
-  step_adjustment {
-    scaling_adjustment          = 3
-    metric_interval_lower_bound = var.request_per_server_per_minute * 2
-    metric_interval_upper_bound = var.request_per_server_per_minute * 3
-  }
-  step_adjustment {
-    scaling_adjustment          = 4
-    metric_interval_lower_bound = var.request_per_server_per_minute * 3
-    metric_interval_upper_bound = var.request_per_server_per_minute * 4
-  }
-  step_adjustment {
-    scaling_adjustment          = 5
-    metric_interval_lower_bound = var.request_per_server_per_minute * 4
-  }
+
+// # step_adjustment is not supported for the policy type "TargetTrackingScaling"
+//  step_adjustment {
+//    scaling_adjustment          = 1
+//    metric_interval_lower_bound = 0
+//    metric_interval_upper_bound = var.request_per_server_per_minute
+//  }
+//  step_adjustment {
+//    scaling_adjustment          = 2
+//    metric_interval_lower_bound = var.request_per_server_per_minute
+//    metric_interval_upper_bound = var.request_per_server_per_minute * 2
+//  }
+//  step_adjustment {
+//    scaling_adjustment          = 3
+//    metric_interval_lower_bound = var.request_per_server_per_minute * 2
+//    metric_interval_upper_bound = var.request_per_server_per_minute * 3
+//  }
+//  step_adjustment {
+//    scaling_adjustment          = 4
+//    metric_interval_lower_bound = var.request_per_server_per_minute * 3
+//    metric_interval_upper_bound = var.request_per_server_per_minute * 4
+//  }
+//  step_adjustment {
+//    scaling_adjustment          = 5
+//    metric_interval_lower_bound = var.request_per_server_per_minute * 4
+//  }
 }

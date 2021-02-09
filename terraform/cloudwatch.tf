@@ -11,5 +11,5 @@ resource "aws_cloudwatch_metric_alarm" "request_count_per_target_up_alarm" {
   threshold           = var.request_per_server_per_minute
   period              = 60 # Seconds
   evaluation_periods  = 1
-  alarm_actions       = []
+  alarm_actions       = [aws_autoscaling_policy.scale_out_policy.arn]
 }
