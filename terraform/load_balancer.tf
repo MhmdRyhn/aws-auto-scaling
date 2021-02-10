@@ -8,8 +8,8 @@ resource "aws_lb" "primary_alb" {
 
 resource "aws_lb_listener" "primary_alb_listener" {
   load_balancer_arn = aws_lb.primary_alb.arn
-  protocol          = "HTTP"
-  port              = 80
+  protocol    = local.http.protocol
+  port        = local.http.port
   default_action {
     type = "fixed-response"
     fixed_response {
@@ -25,8 +25,8 @@ resource "aws_lb_target_group" "primary_alb_target_group" {
   name        = "${local.resource_name_prefix}-target-group"
   vpc_id      = var.vpc_id
   target_type = "instance"
-  protocol    = "HTTP"
-  port        = 80
+  protocol    = local.http.protocol
+  port        = local.http.port
 //  slow_start  = 10
   stickiness {
     type    = "lb_cookie"
@@ -34,10 +34,10 @@ resource "aws_lb_target_group" "primary_alb_target_group" {
   }
   health_check {
     enabled  = true
-    interval = 30
-    path     = "/health-check"
-    protocol = "HTTP"
-    port     = 80
+    interval = var.health_check_interval
+    path     = var.alb_health_check_path
+    protocol    = local.http.protocol
+    port        = local.http.port
     timeout  = 5 # Seconds
     matcher  = "200"
   }

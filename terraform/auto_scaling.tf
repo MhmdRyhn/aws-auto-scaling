@@ -19,12 +19,13 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   name                 = "${local.resource_name_prefix}-auto-scaling-group"
   launch_configuration = aws_launch_configuration.launch_configuration.name
   vpc_zone_identifier  = var.vpc_zone_identifier
-  max_size             = 5
   min_size             = 1
   desired_capacity     = 1
-  # TODO: Need to add more attribite. It's not incomplete for now.
+  max_size             = 5
   health_check_type = "EC2"
   enabled_metrics = local.enabled_metrics
+  default_cooldown = var.cooldown_period
+  // TODO: Need to add more attribite. It's not complete for now.
 }
 
 
@@ -38,39 +39,70 @@ resource "aws_autoscaling_policy" "scale_out_policy" {
   name                    = "${local.resource_name_prefix}-scale-out-policy"
   autoscaling_group_name  = aws_autoscaling_group.auto_scaling_group.name
   adjustment_type         = "ExactCapacity"
-  policy_type             = "TargetTrackingScaling"
-//  metric_aggregation_type = "Sum"
-  target_tracking_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label = "${aws_lb.primary_alb.arn_suffix}/${aws_lb_target_group.primary_alb_target_group.arn_suffix}"
-    }
-    target_value = 5.0
+  policy_type             = "StepScaling"
+  metric_aggregation_type = "Sum"
+  step_adjustment {
+    scaling_adjustment          = 1
+    # Upper/Lower bound is --> [Metric value - Breach Threshold]
+    # Ref: https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_StepAdjustment.html
+    metric_interval_lower_bound = 0
+    metric_interval_upper_bound = var.request_per_server
+  }
+  step_adjustment {
+    scaling_adjustment          = 2
+    metric_interval_lower_bound = var.request_per_server
+    metric_interval_upper_bound = var.request_per_server * 2
+  }
+  step_adjustment {
+    scaling_adjustment          = 3
+    metric_interval_lower_bound = var.request_per_server * 2
+    metric_interval_upper_bound = var.request_per_server * 3
+  }
+  step_adjustment {
+    scaling_adjustment          = 4
+    metric_interval_lower_bound = var.request_per_server * 3
+    metric_interval_upper_bound = var.request_per_server * 4
+  }
+  step_adjustment {
+    scaling_adjustment          = 5
+    metric_interval_lower_bound = var.request_per_server * 4
   }
 
-// # step_adjustment is not supported for the policy type "TargetTrackingScaling"
+//  # For policy_type = "TargetTrackingScaling", `step_adjustment` is not supported
+//  target_tracking_configuration {
+//    predefined_metric_specification {
+//      predefined_metric_type = "ALBRequestCountPerTarget"
+//      resource_label = "${aws_lb.primary_alb.arn_suffix}/${aws_lb_target_group.primary_alb_target_group.arn_suffix}"
+//    }
+//    target_value = 5.0
+//  }
+}
+
+
+resource "aws_autoscaling_policy" "scale_in_policy" {
+  name                    = "${local.resource_name_prefix}-scale-in-policy"
+  autoscaling_group_name  = aws_autoscaling_group.auto_scaling_group.name
+  adjustment_type         = "ExactCapacity"
+  policy_type             = "StepScaling"
+  metric_aggregation_type = "Sum"
+
+  step_adjustment {
+    scaling_adjustment          = 1
+//    metric_interval_lower_bound = - var.request_per_server * 2
+    metric_interval_upper_bound = 0
+  }
 //  step_adjustment {
-//    scaling_adjustment          = 1
-//    metric_interval_lower_bound = 0
-//    metric_interval_upper_bound = var.request_per_server_per_minute
+//    scaling_adjustment          = -2
+//    metric_interval_lower_bound = - var.request_per_server * 2
+//    metric_interval_upper_bound = - var.request_per_server * 3
 //  }
 //  step_adjustment {
-//    scaling_adjustment          = 2
-//    metric_interval_lower_bound = var.request_per_server_per_minute
-//    metric_interval_upper_bound = var.request_per_server_per_minute * 2
+//    scaling_adjustment          = -3
+//    metric_interval_lower_bound = - var.request_per_server * 4
+//    metric_interval_upper_bound = - var.request_per_server * 3
 //  }
 //  step_adjustment {
-//    scaling_adjustment          = 3
-//    metric_interval_lower_bound = var.request_per_server_per_minute * 2
-//    metric_interval_upper_bound = var.request_per_server_per_minute * 3
-//  }
-//  step_adjustment {
-//    scaling_adjustment          = 4
-//    metric_interval_lower_bound = var.request_per_server_per_minute * 3
-//    metric_interval_upper_bound = var.request_per_server_per_minute * 4
-//  }
-//  step_adjustment {
-//    scaling_adjustment          = 5
-//    metric_interval_lower_bound = var.request_per_server_per_minute * 4
+//    scaling_adjustment          = - 4
+//    metric_interval_upper_bound = - var.request_per_server * 4
 //  }
 }

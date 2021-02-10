@@ -64,7 +64,64 @@ variable "vpc_zone_identifier" {
 }
 
 
-variable "request_per_server_per_minute" {
-  type        = string
-  description = "Number of request served per instance per minute."
+variable "request_per_server" {
+  type        = number
+  description = "Number of request a server can handle per Unit Time per Datapoint (in CloudWatch metric)."
+  default = 100
+}
+
+
+variable "period" {
+  # evaluation interval = datapoints * period
+  #
+  # >> period, datapoints/evaluation periods, datapoints_to_alarm can be different for scale out and scale in policies.
+  type = number
+  description = "Length of time (in seconds) to evaluate the metric to create each individual data point."
+  default = 60 // 60 Seconds
+}
+
+
+variable "datapoints" {
+  # Also known as `Evaluation Periods`
+  # evaluation interval = datapoints * period
+  #
+  # >> period, datapoints/evaluation periods, datapoints_to_alarm can be different for scale out and scale in policies.
+  type = number
+  description = "Number of the most recent data points within metric evaluation period when determining alarm state."
+  default = 1
+}
+
+
+variable "datapoints_to_alarm" {
+  # This MUST be less than or equal to the `datapoints`. Otherwise, the alarm will never go into ALARM state.
+  #
+  # Let, datapoints_to_alarm = M, datapoints = N, period = P.
+  # If I configure M out of N datapoints with a period of P, then if M datapoints breaches the threshold
+  # within the evaluation inerval (N * P), then the alarm goes into ALARM state.
+  #
+  # >> period, datapoints/evaluation periods, datapoints_to_alarm can be different for scale out and scale in policies.
+  type = string
+  description = "The number of data points within the Evaluation Periods that must be breaching to cause the alarm to go to the ALARM state."
+}
+
+
+variable "cooldown_period" {
+  # The amount of time (in seconds) after a scaling activity completes before another scaling activity can start.
+  type = number
+  description = "Time (in seconds) after which a scaling takes place."
+  default = 10 // 10 seconds
+}
+
+
+variable "health_check_interval" {
+  type = number
+  description = "Interval (in seconds) after which health check request is sent by ALB."
+  default = 30 // 30 Seconds
+}
+
+
+variable "alb_health_check_path" {
+  type = string
+  description = "Path of the health check url."
+  default = "/health-check"
 }

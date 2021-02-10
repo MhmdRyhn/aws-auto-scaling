@@ -5,7 +5,10 @@ locals {
 
 
 locals {
-  build_dir = "${path.module}/../.build"
+  http = {
+    protocol = "HTTP"
+    port = 80
+  }
 }
 
 
@@ -20,4 +23,9 @@ locals {
     "GroupTerminatingInstances",
     "GroupTotalInstances",
   ]
+}
+
+
+locals {
+  build_dir = "${path.module}/../.build"
 }
