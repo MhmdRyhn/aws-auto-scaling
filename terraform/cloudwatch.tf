@@ -13,6 +13,7 @@ resource "aws_cloudwatch_metric_alarm" "request_count_per_target_scale_out_alarm
   evaluation_periods  = var.datapoints
   datapoints_to_alarm = var.datapoints_to_alarm
   alarm_actions       = [aws_autoscaling_policy.scale_out_policy.arn]
+  tags                = local.common_tags
 }
 
 
@@ -31,4 +32,5 @@ resource "aws_cloudwatch_metric_alarm" "request_count_per_target_scale_in_alarm"
   evaluation_periods  = var.datapoints
   datapoints_to_alarm = var.datapoints_to_alarm
   alarm_actions       = [aws_autoscaling_policy.scale_in_policy.arn]
+  tags                = local.common_tags
 }

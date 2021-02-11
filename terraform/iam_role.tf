@@ -9,6 +9,7 @@ resource "aws_iam_role" "ec2_role" {
   name               = "${local.resource_name_prefix}-ec2-role"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.ec2_role_policy_document.json
+  tags               = local.common_tags
 }
 
 

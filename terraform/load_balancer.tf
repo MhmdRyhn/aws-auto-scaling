@@ -5,6 +5,7 @@ resource "aws_lb" "primary_alb" {
   internal           = false
   load_balancer_type = "application"
   subnets            = var.vpc_zone_identifier
+  tags               = local.common_tags
 }
 
 
@@ -43,6 +44,8 @@ resource "aws_lb_target_group" "primary_alb_target_group" {
     timeout  = 5 # Seconds
     matcher  = "200"
   }
+
+  tags = local.common_tags
 }
 
 

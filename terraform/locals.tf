@@ -1,5 +1,5 @@
 locals {
-  resource_name_prefix = "${var.prefix}${var.service ? "-" : ""}${var.service}-${var.environment}"
+  resource_name_prefix = "${var.prefix}${var.service == "" ? "" : "-"}${var.service}-${var.environment}"
   dynamodb_table_name  = "user-profile"
 }
 
@@ -34,7 +34,7 @@ locals {
       Environemnt = var.environment
     },
     zipmap(
-      compact([var.service ? "Service" : ""]),
+      compact([var.service == "" ? "" : "Service"]),
       compact([var.service])
     )
   )

@@ -26,6 +26,23 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   enabled_metrics      = local.asg_enabled_metrics
   default_cooldown     = var.asg_cooldown_period
   // TODO: Need to add more attribite. It's not complete for now.
+  tags = concat(
+    [
+      for key, value in local.common_tags :
+      {
+        key                 = key
+        value               = value
+        propagate_at_launch = true
+      }
+    ],
+    [
+      {
+        key                 = "Name"
+        value               = "${local.resource_name_prefix}-server"
+        propagate_at_launch = true
+      }
+    ]
+  )
 }
 
 
