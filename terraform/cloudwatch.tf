@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_metric_alarm" "request_count_per_target_scale_out_alarm" {
-  alarm_name        = "${local.resource_name_prefix}-request-count-per-target-scale-out-alarm"
+  alarm_name        = "${local.resource_name_prefix}-scale-out-alarm"
   alarm_description = "Scale out alarm when the number-of-request-count >= threshold"
   namespace         = "AWS/ApplicationELB"
   dimensions = {
@@ -17,8 +17,8 @@ resource "aws_cloudwatch_metric_alarm" "request_count_per_target_scale_out_alarm
 
 
 resource "aws_cloudwatch_metric_alarm" "request_count_per_target_scale_in_alarm" {
-  alarm_name        = "${local.resource_name_prefix}-request-count-per-target-scale-in-alarm"
-  alarm_description = "Scale out alarm when the number-of-request-count <= threshold"
+  alarm_name        = "${local.resource_name_prefix}-scale-in-alarm"
+  alarm_description = "Scale out alarm when the number-of-request-count < threshold"
   namespace         = "AWS/ApplicationELB"
   dimensions = {
     TargetGroup = aws_lb_target_group.primary_alb_target_group.arn_suffix

@@ -22,9 +22,9 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   min_size             = 1
   desired_capacity     = 1
   max_size             = 5
-  health_check_type = "EC2"
-  enabled_metrics = local.enabled_metrics
-  default_cooldown = var.cooldown_period
+  health_check_type    = "EC2"
+  enabled_metrics      = local.asg_enabled_metrics
+  default_cooldown     = var.asg_cooldown_period
   // TODO: Need to add more attribite. It's not complete for now.
 }
 
@@ -44,7 +44,7 @@ resource "aws_autoscaling_policy" "scale_out_policy" {
   policy_type             = "StepScaling"
   metric_aggregation_type = "Sum"
   step_adjustment {
-    scaling_adjustment          = 2
+    scaling_adjustment = 2
     # Upper/Lower bound is --> [Metric value - Breach Threshold]
     # Ref: https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_StepAdjustment.html
     metric_interval_lower_bound = 0
@@ -70,24 +70,24 @@ resource "aws_autoscaling_policy" "scale_out_policy" {
     metric_interval_lower_bound = var.request_per_server * 4
   }
 
-//  # For policy_type = "TargetTrackingScaling", `step_adjustment` is not supported
-//  target_tracking_configuration {
-//    predefined_metric_specification {
-//      predefined_metric_type = "ALBRequestCountPerTarget"
-//      resource_label = "${aws_lb.primary_alb.arn_suffix}/${aws_lb_target_group.primary_alb_target_group.arn_suffix}"
-//    }
-//    target_value = 5.0
-//  }
+  //  # For policy_type = "TargetTrackingScaling", `step_adjustment` is not supported
+  //  target_tracking_configuration {
+  //    predefined_metric_specification {
+  //      predefined_metric_type = "ALBRequestCountPerTarget"
+  //      resource_label = "${aws_lb.primary_alb.arn_suffix}/${aws_lb_target_group.primary_alb_target_group.arn_suffix}"
+  //    }
+  //    target_value = 5.0
+  //  }
 }
 
 
 resource "aws_autoscaling_policy" "scale_in_policy" {
   # It explains the scaling policy types --> `SimpleScaling`, `StepScaling` and `TargetTrackingScaling`.
   # https://acloud.guru/forums/aws-certified-solutions-architect-associate/discussion/-LTMH8An16Q-Airb61mo/difference-below-auto-scaling-policies?answer=-LTNp1ecDGvkBpVvRjbP
-  name = "${local.resource_name_prefix}-scale-in-policy"
-  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.name
-  adjustment_type = "ExactCapacity"
-  policy_type = "SimpleScaling"
+  name                    = "${local.resource_name_prefix}-scale-in-policy"
+  autoscaling_group_name  = aws_autoscaling_group.auto_scaling_group.name
+  adjustment_type         = "ExactCapacity"
+  policy_type             = "SimpleScaling"
   metric_aggregation_type = "Sum"
-  scaling_adjustment = 1
+  scaling_adjustment      = 1
 }

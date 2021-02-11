@@ -2,6 +2,7 @@ data "aws_vpc" "app_vpc" {
   id = var.vpc_id
 }
 
+// TODO: Need to create a security group for the ALB.
 
 resource "aws_security_group" "app_instance_sg" {
   name        = "${local.resource_name_prefix}-security-group"
@@ -13,7 +14,9 @@ resource "aws_security_group" "app_instance_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    // This should be from the subnet(s) where the Load Balancer exists
+    // TODO: This needs to be optimized.
+    // This should be from the subnet(s) where the Load Balancer exists.
+    // Or it can be from the security group assigned to the load balancer.
     cidr_blocks = [data.aws_vpc.app_vpc.cidr_block]
   }
 

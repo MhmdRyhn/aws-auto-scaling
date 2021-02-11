@@ -14,6 +14,12 @@ variable "prefix" {
   description = "A prefix that is to be used with the resource name. Usually, this should be the application name."
 }
 
+variable "service" {
+  type        = string
+  description = "Name of the service. E.g., auth, payment, reporting etc."
+  default     = ""
+}
+
 variable "environment" {
   type        = string
   description = "Environment name, e.g., Dev, Test, Stage, UAT, Prod etc."
@@ -67,7 +73,7 @@ variable "vpc_zone_identifier" {
 variable "request_per_server" {
   type        = number
   description = "Number of request a server can handle per Unit Time per Datapoint (in CloudWatch metric)."
-  default = 100
+  default     = 100
 }
 
 
@@ -75,9 +81,9 @@ variable "period" {
   # evaluation interval = datapoints * period
   #
   # >> period, datapoints/evaluation periods, datapoints_to_alarm can be different for scale out and scale in policies.
-  type = number
+  type        = number
   description = "Length of time (in seconds) to evaluate the metric to create each individual data point."
-  default = 60 // 60 Seconds
+  default     = 60 // 60 Seconds
 }
 
 
@@ -86,9 +92,9 @@ variable "datapoints" {
   # evaluation interval = datapoints * period
   #
   # >> period, datapoints/evaluation periods, datapoints_to_alarm can be different for scale out and scale in policies.
-  type = number
+  type        = number
   description = "Number of the most recent data points within metric evaluation period when determining alarm state."
-  default = 1
+  default     = 1
 }
 
 
@@ -100,28 +106,28 @@ variable "datapoints_to_alarm" {
   # within the evaluation inerval (N * P), then the alarm goes into ALARM state.
   #
   # >> period, datapoints/evaluation periods, datapoints_to_alarm can be different for scale out and scale in policies.
-  type = string
+  type        = string
   description = "The number of data points within the Evaluation Periods that must be breaching to cause the alarm to go to the ALARM state."
 }
 
 
-variable "cooldown_period" {
+variable "asg_cooldown_period" {
   # The amount of time (in seconds) after a scaling activity completes before another scaling activity can start.
-  type = number
+  type        = number
   description = "Time (in seconds) after which a scaling takes place."
-  default = 10 // 10 seconds
+  default     = 10 // 10 seconds
 }
 
 
 variable "health_check_interval" {
-  type = number
+  type        = number
   description = "Interval (in seconds) after which health check request is sent by ALB."
-  default = 30 // 30 Seconds
+  default     = 30 // 30 Seconds
 }
 
 
 variable "alb_health_check_path" {
-  type = string
+  type        = string
   description = "Path of the health check url."
-  default = "/health-check"
+  default     = "/health-check"
 }
