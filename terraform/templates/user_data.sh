@@ -9,6 +9,8 @@ cd /var//www/
 git clone https://github.com/MhmdRyhn/aws-auto-scaling.git
 sudo chmod -R 757 aws-auto-scaling/
 cd aws-auto-scaling
+sudo rm -f build.sh
+sudo rm -rf terraform
 virtualenv -p python3 venv
 venv/bin/pip install -r requirements.txt
 sudo cp autoscale.apache2.conf /etc/apache2/sites-available/autoscale.apache2.conf

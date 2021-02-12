@@ -43,9 +43,10 @@ def calculation(*args, **kwargs):
     try:
         instance_id = ec2_metadata.instance_id
         private_ip = ec2_metadata.private_ipv4
+        public_ip = ec2_metadata.public_ipv4
         return flask.jsonify({
             "status": "SUCCESS",
-            "instance_info": "{} | {}".format(instance_id, private_ip)
+            "instance_info": "{} | {} | {}".format(instance_id, private_ip, public_ip)
         }), 200
     except Exception:
         return flask.jsonify({
