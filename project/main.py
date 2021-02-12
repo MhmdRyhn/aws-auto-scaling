@@ -1,4 +1,5 @@
 import flask
+from ec2_metadata import ec2_metadata
 
 
 # from project.profile.routes import profile_bp
@@ -36,13 +37,21 @@ app = _create_app()
 @app.route("/", methods=["GET"])
 def calculation(*args, **kwargs):
     """
-    Doing a reasonably large calculation to imitate an actual operation.
+    Should do a reasonably large calculation to imitate an actual operation.
     E.g., You can run a database query and then process the result.
     """
-    summation = 0
-    for i in range(10000000):
-        summation += 1
-    return flask.jsonify({"status": "SUCCESS", "summation": summation}), 200
+    try:
+        instance_id = ec2_metadata.instance_id
+        private_ip = ec2_metadata.private_ipv4
+        return flask.jsonify({
+            "status": "SUCCESS",
+            "instance_info": "{} | {}".format(instance_id, private_ip)
+        }), 200
+    except Exception:
+        return flask.jsonify({
+            "status": "FAILED",
+            "instance_info": "Not an EC2 instance or the instance doesn't have enough permission."
+        }), 200
 
 
 @app.route("/health-check", methods=["GET"])
