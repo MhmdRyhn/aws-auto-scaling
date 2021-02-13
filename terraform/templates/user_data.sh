@@ -3,7 +3,7 @@
 set -e
 set -x
 
-cd /var//www/
+cd /var/www/
 # In real, SSH url with public key authentication should be used.
 # Don't use username and password to clone the repo.
 git clone https://github.com/MhmdRyhn/aws-auto-scaling.git
